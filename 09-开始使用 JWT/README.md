@@ -634,7 +634,7 @@ php artisan api:route
 
 地址是 ` /api/lessons` 没有 `v1` 前缀，访问 `http://api.dev/api/lessons/`  看到已经正常。
 
-![查看已注册的路由](https://imgcdn.wangyan.org/l/laravel-api-route.jpg)
+![查看已注册的路由](images/api-route.jpg)
 
 ### 8.2  Dingo API 响应
 
@@ -880,71 +880,3 @@ class AuthController extends BaseController
 
 > <http://api.dev/api/lesson/1?token=xxx>
 > <http://api.dev/api/lessons?token=xxx>
-
-## 第10章 JWT 其他用法
-
-### 10.1 根据 token 返回用户信息 
-
-路由
-
-```php
-<?php
-// routes\api.php
-   $api->group(['middleware' => 'jwt.refresh'], function ($api) {
-       $api->get('user/info', 'AuthController@getAuthenticatedUser');
-   });
-```
-
-AuthController
-
-```php
-<?php
-//app\Api\Controllers\AuthController.php
-
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-
-    public function getAuthenticatedUser()
-    {
-        try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], 404);
-            }
-        } catch (TokenExpiredException $e) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (JWTException $e) {
-            return response()->json(['token_absent'], $e->getStatusCode());
-        }
-
-        return response()->json(compact('user'));
-    }
-```
-
-调试：<http://api.dev/api/user/info?token=xx>
-
-### 10.2  解决请求字段与数据库不一致问题 
-
-注意 password 没有变
-
-```php
-<?php
-//app\Api\Controllers\AuthController.php
-        $credentials = [
-            'user_email' => $request->get('user_email'),
-            'password' => $request->get('user_password'),
-        ];
-```
-
-增加  `getAuthPassword` 方法
-
-```php
-<?php
-// api\app\Models\User.php
-    public function getAuthPassword()
-    {
-        return $this->user_password;
-    }
-```

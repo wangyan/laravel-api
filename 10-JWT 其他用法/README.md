@@ -634,7 +634,7 @@ php artisan api:route
 
 地址是 ` /api/lessons` 没有 `v1` 前缀，访问 `http://api.dev/api/lessons/`  看到已经正常。
 
-![查看已注册的路由](https://imgcdn.wangyan.org/l/laravel-api-route.jpg)
+![查看已注册的路由](images/api-route.jpg)
 
 ### 8.2  Dingo API 响应
 
